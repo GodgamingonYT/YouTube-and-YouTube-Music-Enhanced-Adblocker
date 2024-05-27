@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         YouTube Ad Blocker
+// @name         YouTube Adblock usersceipt
 // @namespace    http://tampermonkey.net/
 // @version      1.0
 // @description  Block YouTube ads
@@ -7,6 +7,9 @@
 // @match        *://m.youtube.com/*
 // @match        *://music.youtube.com/*
 // @match        *://www.youtube-nocookie.com/*
+// @author.      Godgaming
+// @updateURL    
+// @downloadURL  
 // @grant        none
 // ==/UserScript==
 
