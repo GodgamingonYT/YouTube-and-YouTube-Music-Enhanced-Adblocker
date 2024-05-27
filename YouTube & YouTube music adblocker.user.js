@@ -6,8 +6,8 @@
 // @author       Godgaming
 // @match        *://*.youtube.com/*
 // @match        *://music.youtube.com/*
-// @downloadURL  https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
-// @updateURL    https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
+// @downloadURL  https://raw.githubusercontent.com/GodgamingonYT/YouTube-and-YouTube-Music-Enhanced-Adblocker/main/YouTube%20%26%20YouTube%20music%20adblocker.user.js
+// @updateURL    https://raw.githubusercontent.com/GodgamingonYT/YouTube-and-YouTube-Music-Enhanced-Adblocker/main/YouTube%20%26%20YouTube%20music%20adblocker.user.js
 // @run-at       document-start
 // @grant        none
 // ==/UserScript==
