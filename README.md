@@ -2,6 +2,8 @@
 
 This userscript blocks YouTube ads and bypasses adblock detection mechanisms effectively.
 
+Please tell me in issues if there is some problem. (this is still in very beta)
+
 ## Features
 - Blocks video ads, banner ads, and other ad formats in YouTube
 
