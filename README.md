@@ -1,4 +1,4 @@
-# YouTube Ultimate Ad Blocker with Adblock Detection Bypass
+# YouTube Adblocker Userscript
 
 This userscript blocks YouTube ads and bypasses adblock detection mechanisms effectively.
 
