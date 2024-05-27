@@ -1,4 +1,4 @@
-# YouTube Adblocker Userscript
+# YouTube and YouTube music Adblocker Userscript
 
 This userscript blocks YouTube ads and bypasses adblock detection mechanisms effectively.
 
