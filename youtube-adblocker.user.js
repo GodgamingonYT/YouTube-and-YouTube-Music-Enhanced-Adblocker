@@ -1,224 +1,89 @@
 // ==UserScript==
-// @name         YouTube Adblock usersceipt
+// @name         YouTube & YouTube Music Ad Blocker Enhanced
 // @namespace    http://tampermonkey.net/
-// @version      1.0
-// @description  Block YouTube ads
-// @match        *://www.youtube.com/*
-// @match        *://m.youtube.com/*
-// @match        *://music.youtube.com/*
-// @match        *://www.youtube-nocookie.com/*
+// @version      1.5
+// @description  Block ads on both YouTube and YouTube Music efficiently, bypassing AdBlock detection and inspired by AdGuard techniques.
 // @author       Godgaming
-// @run-at       document-start
-// @updateURL    https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
+// @match        *://*.youtube.com/*
+// @match        *://music.youtube.com/*
 // @downloadURL  https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
+// @updateURL    https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
+// @run-at       document-start
 // @grant        none
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
-    function runBlockYoutube() {
-        const allowedHostnames = [
-            "www.youtube.com",
-            "m.youtube.com",
-            "music.youtube.com",
-            "www.youtube-nocookie.com"
-        ];
-
-        if (!allowedHostnames.includes(window.location.hostname)) {
-            return;
-        }
-
-        const hiddenCSS = {
-            "www.youtube.com": [
-                "#__ffYoutube1",
-                "#__ffYoutube2",
-                "#__ffYoutube3",
-                "#__ffYoutube4",
-                "#feed-pyv-container",
-                "#feedmodule-PRO",
-                "#homepage-chrome-side-promo",
-                "#merch-shelf",
-                "#offer-module",
-                '#pla-shelf > ytd-pla-shelf-renderer[class="style-scope ytd-watch"]',
-                "#pla-shelf",
-                "#premium-yva",
-                "#promo-info",
-                "#promo-list",
-                "#promotion-shelf",
-                "#related > ytd-watch-next-secondary-results-renderer > #items > ytd-compact-promoted-video-renderer.ytd-watch-next-secondary-results-renderer",
-                "#search-pva",
-                "#shelf-pyv-container",
-                "#video-masthead",
-                "#watch-branded-actions",
-                "#watch-buy-urls",
-                "#watch-channel-brand-div",
-                "#watch7-branded-banner",
-                "#YtKevlarVisibilityIdentifier",
-                "#YtSparklesVisibilityIdentifier",
-                ".carousel-offer-url-container",
-                ".companion-ad-container",
-                ".GoogleActiveViewElement",
-                '.list-view[style="margin: 7px 0pt;"]',
-                ".promoted-sparkles-text-search-root-container",
-                ".promoted-videos",
-                ".searchView.list-view",
-                ".sparkles-light-cta",
-                ".watch-extra-info-column",
-                ".watch-extra-info-right",
-                ".ytd-carousel-ad-renderer",
-                ".ytd-compact-promoted-video-renderer",
-                ".ytd-companion-slot-renderer",
-                ".ytd-merch-shelf-renderer",
-                ".ytd-player-legacy-desktop-watch-ads-renderer",
-                ".ytd-promoted-sparkles-text-search-renderer",
-                ".ytd-promoted-video-renderer",
-                ".ytd-search-pyv-renderer",
-                ".ytd-video-masthead-ad-v3-renderer",
-                ".ytp-ad-action-interstitial-background-container",
-                ".ytp-ad-action-interstitial-slot",
-                ".ytp-ad-image-overlay",
-                ".ytp-ad-overlay-container",
-                ".ytp-ad-progress",
-                ".ytp-ad-progress-list",
-                '[class*="ytd-display-ad-"]',
-                '[layout*="display-ad-"]',
-                'a[href^="http://www.youtube.com/cthru?"]',
-                'a[href^="https://www.youtube.com/cthru?"]',
-                "ytd-action-companion-ad-renderer",
-                "ytd-banner-promo-renderer",
-                "ytd-compact-promoted-video-renderer",
-                "ytd-companion-slot-renderer",
-                "ytd-display-ad-renderer",
-                "ytd-promoted-sparkles-text-search-renderer",
-                "ytd-promoted-sparkles-web-renderer",
-                "ytd-search-pyv-renderer",
-                "ytd-single-option-survey-renderer",
-                "ytd-video-masthead-ad-advertiser-info-renderer",
-                "ytd-video-masthead-ad-v3-renderer",
-                "YTM-PROMOTED-VIDEO-RENDERER"
-            ],
-            "m.youtube.com": [
-                ".companion-ad-container",
-                ".ytp-ad-action-interstitial",
-                '.ytp-cued-thumbnail-overlay > div[style*="/sddefault.jpg"]',
-                `a[href^="/watch?v="][onclick^="return koya.onEvent(arguments[0]||window.event,'"]:not([role]):not([class]):not([id])`,
-                `a[onclick*='"ping_url":"http://www.google.com/aclk?']`,
-                "ytm-companion-ad-renderer",
-                "ytm-companion-slot",
-                "ytm-promoted-sparkles-text-search-renderer",
-                "ytm-promoted-sparkles-web-renderer",
-                "ytm-promoted-video-renderer"
-            ]
-        };
-
-        const hideElements = (hostname) => {
-            const selectors = hiddenCSS[hostname];
-            if (!selectors) {
-                return;
+    const addStylesToHead = () => {
+        const adBlockCSS = `
+            .video-ads, .ytp-ad-module, .ytp-ad-player-overlay, .ytp-ad-overlay-container,
+            .ytp-ad-image-overlay, .ytp-ad-skip-button, .ytp-ad-progress, .ytp-ad-marker-container,
+            .ytp-ad-markers, .ad-showing, .ad-interrupting, .ad-created, .ad-display,
+            .ytp-ad-preview-container, .ytp-ad-overlay-slot, .ytp-ad-overlay-background,
+            .ytp-ad-overlay-image, .ytp-ad-overlay-close-button, .ytp-ad-overlay-container,
+            .ytmusic-player-bar .ytp-ad-thumbnail {
+                display: none !important;
             }
-            const rule = `${selectors.join(", ")} { display: none!important; }`;
-            const style = document.createElement("style");
-            style.innerHTML = rule;
-            document.head.appendChild(style);
-        };
+        `;
 
-        const observeDomChanges = (callback) => {
-            const domMutationObserver = new MutationObserver((mutations) => {
-                callback(mutations);
-            });
-            domMutationObserver.observe(document.documentElement, {
-                childList: true,
-                subtree: true
-            });
-        };
+        const style = document.createElement('style');
+        style.innerHTML = adBlockCSS;
+        document.head.appendChild(style);
+    };
 
-        const hideDynamicAds = () => {
-            const elements = document.querySelectorAll("#contents > ytd-rich-item-renderer ytd-display-ad-renderer");
-            if (elements.length === 0) {
-                return;
+    const adObserverCallback = (mutations) => {
+        const adContainers = document.querySelectorAll('.video-ads, .ytp-ad-module .ad-showing, .ytp-ad-player-overlay, .ytp-ad-overlay-container, .ytmusic-player-bar .ytp-ad-thumbnail');
+        
+        adContainers.forEach(adContainer => {
+            if (adContainer) {
+                adContainer.style.display = 'none';
+                adContainer.innerHTML = '';
             }
-            elements.forEach((el) => {
-                if (el.parentNode && el.parentNode.parentNode) {
-                    const parent = el.parentNode.parentNode;
-                    if (parent.localName === "ytd-rich-item-renderer") {
-                        parent.style.display = "none";
-                    }
-                }
-            });
-        };
-
-        const autoSkipAds = () => {
-            if (document.querySelector(".ad-showing")) {
-                const video = document.querySelector("video");
-                if (video && video.duration) {
-                    video.currentTime = video.duration;
-                    setTimeout(() => {
-                        const skipBtn = document.querySelector("button.ytp-ad-skip-button");
-                        if (skipBtn) {
-                            skipBtn.click();
-                        }
-                    }, 100);
-                }
-            }
-        };
-
-        const overrideObject = (obj, propertyName, overrideValue) => {
-            if (!obj) {
-                return false;
-            }
-            let overriden = false;
-            for (const key in obj) {
-                if (obj.hasOwnProperty(key) && key === propertyName) {
-                    obj[key] = overrideValue;
-                    overriden = true;
-                } else if (obj.hasOwnProperty(key) && typeof obj[key] === "object") {
-                    if (overrideObject(obj[key], propertyName, overrideValue)) {
-                        overriden = true;
-                    }
-                }
-            }
-            if (overriden) {
-                console.log(`found: ${propertyName}`);
-            }
-            return overriden;
-        };
-
-        const jsonOverride = (propertyName, overrideValue) => {
-            const nativeJSONParse = JSON.parse;
-            JSON.parse = (...args) => {
-                const obj = nativeJSONParse.apply(this, args);
-                overrideObject(obj, propertyName, overrideValue);
-                return obj;
-            };
-            const nativeResponseJson = Response.prototype.json;
-            Response.prototype.json = new Proxy(nativeResponseJson, {
-                apply(...args) {
-                    const promise = Reflect.apply(args);
-                    return new Promise((resolve, reject) => {
-                        promise.then((data) => {
-                            overrideObject(data, propertyName, overrideValue);
-                            resolve(data);
-                        }).catch((error) => reject(error));
-                    });
-                }
-            });
-        };
-
-        jsonOverride("adPlacements", []);
-        jsonOverride("playerAds", []);
-        hideElements(window.location.hostname);
-        hideDynamicAds();
-        autoSkipAds();
-        observeDomChanges(() => {
-            hideDynamicAds();
-            autoSkipAds();
         });
-    }
 
-    const script = document.createElement("script");
-    const scriptText = runBlockYoutube.toString();
-    script.innerHTML = `(${scriptText})();`;
-    document.head.appendChild(script);
-    document.head.removeChild(script);
+        const skipButton = document.querySelector('.ytp-ad-skip-button');
+        if (skipButton && skipButton.style.display !== 'none') {
+            skipButton.click();
+        }
+    };
+
+    const observeAdElements = () => {
+        const observer = new MutationObserver(adObserverCallback);
+        observer.observe(document.body, { childList: true, subtree: true });
+    };
+
+    const hijackXHR = () => {
+        const originalXHR = window.XMLHttpRequest;
+        
+        function newXHR() {
+            const xhr = new originalXHR();
+            const originalOpen = xhr.open;
+            
+            xhr.open = function (method, url) {
+                if (url.includes('ad') || url.includes('doubleclick.net') || url.includes('googlesyndication')) {
+                    url = 'about:blank';
+                }
+                originalOpen.apply(xhr, arguments);
+            };
+            
+            return xhr;
+        }
+        
+        window.XMLHttpRequest = newXHR;
+    };
+
+    const disableAdPlaybackErrorReporting = () => {
+        window.onerror = (event) => {
+            if (event.includes('ytp-ad-module')) {
+                return true; // Suppress ad-related errors
+            }
+            return false;
+        };
+    };
+
+    addStylesToHead();
+    observeAdElements();
+    hijackXHR();
+    disableAdPlaybackErrorReporting();
 })();
