@@ -8,8 +8,8 @@
 // @match        *://music.youtube.com/*
 // @match        *://www.youtube-nocookie.com/*
 // @author.      Godgaming
-// @updateURL    
-// @downloadURL  
+// @updateURL    https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
+// @downloadURL  https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
 // @grant        none
 // ==/UserScript==
 
