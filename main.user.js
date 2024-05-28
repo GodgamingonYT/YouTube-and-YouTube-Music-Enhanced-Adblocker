@@ -2,12 +2,12 @@
 // @name         YouTube & YouTube Music Enhanced Ad Blocker
 // @namespace    http://tampermonkey.net/
 // @version      1.6
-// @description  Block ads and bypass YouTube Adblock detection efficiently.
+// @description  Block ads and bypass YouTube Adblock detection efficiently. Also removes ad spaces.
 // @author       Godgaming
 // @match        *://*.youtube.com/*
 // @match        *://music.youtube.com/*
-// @downloadURL  https://raw.githubusercontent.com/GodgamingonYT/YouTube-and-YouTube-Music-Enhanced-Adblocker/main/YouTube%20%26%20YouTube%20music%20adblocker.user.js
-// @updateURL    https://raw.githubusercontent.com/GodgamingonYT/YouTube-and-YouTube-Music-Enhanced-Adblocker/main/YouTube%20%26%20YouTube%20music%20adblocker.user.js
+// @downloadURL  https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
+// @updateURL    https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
 // @run-at       document-start
 // @grant        none
 // ==/UserScript==
@@ -24,6 +24,10 @@
         .ytmusic-player-bar .ytp-ad-thumbnail, #ad-container, .ytm-ad-module, div[class*='ad-container'],
         #player-ads, .html5-ads, .ytp-ad-feedback-dialog, .ad-container-loaded {
             display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         .ytp-ad-module, .ytp-ad-player-overlay, #secondary[ytd-watch-flexy][is-two-columns], 
         .ytp-ad-text-overlay, .ytp-ad-message-container, .ytp-player-content.ad-interrupting {
@@ -46,6 +50,10 @@
             if (adContainer) {
                 adContainer.style.display = 'none';
                 adContainer.innerHTML = '';
+                adContainer.style.width = '0';
+                adContainer.style.height = '0';
+                adContainer.style.margin = '0';
+                adContainer.style.padding = '0';
             }
         });
 
