@@ -38,34 +38,23 @@
             padding: 0 !important;
         }
     `;
-
+    
     const style = document.createElement('style');
     style.innerHTML = adBlockCSS;
     document.head.appendChild(style);
 
-    const adObserverCallback = () => {
-        const elementsToCheck = [
-            '.video-ads',
-            '.ytp-ad-module',
-            '.ad-showing',
-            '.ytp-ad-player-overlay',
-            '.ytp-ad-overlay-container',
-            '.ytmusic-player-bar .ytp-ad-thumbnail',
-            '#ad-container',
-            '.ytm-ad-module'
-        ];
-
-        elementsToCheck.forEach(selector => {
-            document.querySelectorAll(selector).forEach(adContainer => {
-                if (adContainer) {
-                    adContainer.style.display = 'none';
-                    adContainer.innerHTML = '';
-                    adContainer.style.width = '0';
-                    adContainer.style.height = '0';
-                    adContainer.style.margin = '0';
-                    adContainer.style.padding = '0';
-                }
-            });
+    const adObserverCallback = (mutations) => {
+        const adContainers = document.querySelectorAll('.video-ads, .ytp-ad-module .ad-showing, .ytp-ad-player-overlay, .ytp-ad-overlay-container, .ytmusic-player-bar .ytp-ad-thumbnail, #ad-container, .ytm-ad-module');
+        
+        adContainers.forEach(adContainer => {
+            if (adContainer) {
+                adContainer.style.display = 'none';
+                adContainer.innerHTML = '';
+                adContainer.style.width = '0';
+                adContainer.style.height = '0';
+                adContainer.style.margin = '0';
+                adContainer.style.padding = '0';
+            }
         });
 
         const skipButton = document.querySelector('.ytp-ad-skip-button');
@@ -80,10 +69,10 @@
     };
 
     const hijackXHR = () => {
-        const OriginalXHR = window.XMLHttpRequest;
+        const originalXHR = window.XMLHttpRequest;
         
         function newXHR() {
-            const xhr = new OriginalXHR();
+            const xhr = new originalXHR();
             const originalOpen = xhr.open;
             
             xhr.open = function (method, url) {
@@ -100,12 +89,10 @@
     };
 
     const hideAdDetectOverlay = () => {
-        const detectionOverlays = document.querySelectorAll('div[id*="adBlocker"]');
-        detectionOverlays.forEach(detectionOverlay => {
-            if (detectionOverlay) {
-                detectionOverlay.style.display = 'none';
-            }
-        });
+        const detectionOverlay = document.querySelector('div[id*="adBlocker"]');
+        if (detectionOverlay) {
+            detectionOverlay.style.display = 'none';
+        }
     };
 
     const observeDetectionOverlay = () => {
@@ -113,9 +100,8 @@
         observer.observe(document.body, { childList: true, subtree: true });
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
-        observeAdElements();
-        hijackXHR();
-        observeDetectionOverlay();
-    });
+    // Execute functions
+    observeAdElements();
+    hijackXHR();
+    observeDetectionOverlay();
 })();
