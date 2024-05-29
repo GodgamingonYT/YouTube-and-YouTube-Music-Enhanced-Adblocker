@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         YouTube & YouTube Music Enhanced Ad Blocker
-// @namespace    http://tampermonkey.net/
+// @namespace    https://github.com/GodgamingonYT/YouTube-and-YouTube-Music-Enhanced-Adblocker/blob/main/main.user.js
 // @version      1.8
 // @description  Block ads and bypass YouTube Adblock detection efficiently
 // @downloadURL  https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
