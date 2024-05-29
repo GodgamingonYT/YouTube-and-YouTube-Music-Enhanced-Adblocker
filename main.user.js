@@ -113,4 +113,4 @@
     observeAdElements();
     hijackXHR();
     observeDetectionOverlay();
-})();
+})()
