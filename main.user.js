@@ -3,9 +3,6 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.6
 // @description  Block ads and bypass YouTube Adblock detection efficiently. Also removes ad spaces.
-// @author       Godgaming
-// @match        *://*.youtube.com/*
-// @match        *://music.youtube.com/*
 // @downloadURL  https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
 // @updateURL    https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
 // @run-at       document-start
@@ -15,6 +12,7 @@
 (function () {
     'use strict';
 
+    // Inject CSS to hide ad elements
     const adBlockCSS = `
         .video-ads, .ytp-ad-module, .ytp-ad-player-overlay, .ytp-ad-overlay-container,
         .ytp-ad-image-overlay, .ytp-ad-skip-button, .ytp-ad-progress, .ytp-ad-marker-container,
@@ -22,7 +20,10 @@
         .ytp-ad-preview-container, .ytp-ad-overlay-slot, .ytp-ad-overlay-background,
         .ytp-ad-overlay-image, .ytp-ad-overlay-close-button, .ytp-ad-overlay-container,
         .ytmusic-player-bar .ytp-ad-thumbnail, #ad-container, .ytm-ad-module, div[class*='ad-container'],
-        #player-ads, .html5-ads, .ytp-ad-feedback-dialog, .ad-container-loaded {
+        #player-ads, .html5-ads, .ytp-ad-feedback-dialog, .ad-container-loaded, [id^="ad_block"],
+        [class*="overlay-ad"], [class*="ad-block"], [class*="advertisement"], [class*="sponsored"],
+        [id*="ad_block_container"], .html5-video-player[id*="ad"]
+        {
             display: none !important;
             width: 0 !important;
             height: 0 !important;
@@ -38,29 +39,33 @@
             padding: 0 !important;
         }
     `;
-    
+
     const style = document.createElement('style');
     style.innerHTML = adBlockCSS;
     document.head.appendChild(style);
 
+    // MutationObserver callback to handle dynamically added ad elements
     const adObserverCallback = (mutations) => {
-        const adContainers = document.querySelectorAll('.video-ads, .ytp-ad-module .ad-showing, .ytp-ad-player-overlay, .ytp-ad-overlay-container, .ytmusic-player-bar .ytp-ad-thumbnail, #ad-container, .ytm-ad-module');
+        const adContainers = document.querySelectorAll(`
+            .video-ads, .ytp-ad-module .ad-showing, .ytp-ad-player-overlay, .ytp-ad-overlay-container, 
+            .ytmusic-player-bar .ytp-ad-thumbnail, #ad-container, .ytm-ad-module, [id^="ad_block"], 
+            [class*="overlay-ad"], [class*="ad-block"], [class*="advertisement"], [class*="sponsored"], 
+            [id*="ad_block_container"], .html5-video-player[id*="ad"]
+        `);
         
         adContainers.forEach(adContainer => {
             if (adContainer) {
-                adContainer.style.display = 'none';
-                adContainer.innerHTML = '';
-                adContainer.style.width = '0';
-                adContainer.style.height = '0';
-                adContainer.style.margin = '0';
-                adContainer.style.padding = '0';
+                adContainer.remove();
             }
         });
 
-        const skipButton = document.querySelector('.ytp-ad-skip-button');
-        if (skipButton && skipButton.style.display !== 'none') {
-            skipButton.click();
-        }
+        // Auto-skip ad functionality
+        const skipButtons = document.querySelectorAll('.ytp-ad-skip-button, .ytp-ad-overlay-close-button');
+        skipButtons.forEach(button => {
+            if (button && button.style.display !== 'none') {
+                button.click();
+            }
+        });
     };
 
     const observeAdElements = () => {
@@ -68,6 +73,7 @@
         observer.observe(document.body, { childList: true, subtree: true });
     };
 
+    // Hijack XMLHttpRequest to block ad-related URLs
     const hijackXHR = () => {
         const originalXHR = window.XMLHttpRequest;
         
@@ -76,7 +82,7 @@
             const originalOpen = xhr.open;
             
             xhr.open = function (method, url) {
-                if (url.includes('ad') || url.includes('doubleclick.net') || url.includes('googlesyndication')) {
+                if (url.includes('ad') || url.includes('doubleclick.net') || url.includes('googlesyndication') || url.includes('googleadservices')) {
                     url = 'about:blank';
                 }
                 originalOpen.apply(xhr, arguments);
@@ -85,14 +91,20 @@
             return xhr;
         }
         
+        xhr.onload = () => {
+          const scriptAud = xhr.response.match(/'www.-aud.+/) || "";
+          if (scriptAud.includes("ad")) return;
+        }
+
         window.XMLHttpRequest = newXHR;
     };
 
+    // Hide adblock detection overlays
     const hideAdDetectOverlay = () => {
-        const detectionOverlay = document.querySelector('div[id*="adBlocker"]');
-        if (detectionOverlay) {
-            detectionOverlay.style.display = 'none';
-        }
+        const detectionOverlays = document.querySelectorAll('div[id*="adBlock"], div[class*="ad-block"]');
+        detectionOverlays.forEach(overlay => {
+            overlay.remove();
+        });
     };
 
     const observeDetectionOverlay = () => {
@@ -104,4 +116,4 @@
     observeAdElements();
     hijackXHR();
     observeDetectionOverlay();
-})();
+})();;
