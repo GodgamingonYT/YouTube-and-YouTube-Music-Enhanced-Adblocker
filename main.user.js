@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube & YouTube Music Enhanced Ad Blocker
 // @namespace    http://tampermonkey.net/
-// @version      1.6
-// @description  Block ads and bypass YouTube Adblock detection efficiently. Also removes ad spaces.
+// @version      1.8
+// @description  Block ads and bypass YouTube Adblock detection efficiently
 // @downloadURL  https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
 // @updateURL    https://raw.githubusercontent.com/GodgamingonYT/YouTube-AdBlocker-userscript/main/youtube-adblocker.user.js
 // @run-at       document-start
@@ -12,7 +12,6 @@
 (function () {
     'use strict';
 
-    // Inject CSS to hide ad elements
     const adBlockCSS = `
         .video-ads, .ytp-ad-module, .ytp-ad-player-overlay, .ytp-ad-overlay-container,
         .ytp-ad-image-overlay, .ytp-ad-skip-button, .ytp-ad-progress, .ytp-ad-marker-container,
@@ -43,8 +42,7 @@
     const style = document.createElement('style');
     style.innerHTML = adBlockCSS;
     document.head.appendChild(style);
-
-    // MutationObserver callback to handle dynamically added ad elements
+    
     const adObserverCallback = (mutations) => {
         const adContainers = document.querySelectorAll(`
             .video-ads, .ytp-ad-module .ad-showing, .ytp-ad-player-overlay, .ytp-ad-overlay-container, 
@@ -59,7 +57,6 @@
             }
         });
 
-        // Auto-skip ad functionality
         const skipButtons = document.querySelectorAll('.ytp-ad-skip-button, .ytp-ad-overlay-close-button');
         skipButtons.forEach(button => {
             if (button && button.style.display !== 'none') {
@@ -73,7 +70,6 @@
         observer.observe(document.body, { childList: true, subtree: true });
     };
 
-    // Hijack XMLHttpRequest to block ad-related URLs
     const hijackXHR = () => {
         const originalXHR = window.XMLHttpRequest;
         
@@ -87,19 +83,21 @@
                 }
                 originalOpen.apply(xhr, arguments);
             };
-            
+
+            xhr.addEventListener('readystatechange', function () {
+                if (this.readyState === 4 && this.status === 200 && this.responseURL.includes('/get_video_info')) {
+                    let responseText = this.responseText;
+                    if (responseText.includes('ad')) {
+                    }
+                }
+            });
+
             return xhr;
-        }
-        
-        xhr.onload = () => {
-          const scriptAud = xhr.response.match(/'www.-aud.+/) || "";
-          if (scriptAud.includes("ad")) return;
         }
 
         window.XMLHttpRequest = newXHR;
     };
 
-    // Hide adblock detection overlays
     const hideAdDetectOverlay = () => {
         const detectionOverlays = document.querySelectorAll('div[id*="adBlock"], div[class*="ad-block"]');
         detectionOverlays.forEach(overlay => {
@@ -112,8 +110,7 @@
         observer.observe(document.body, { childList: true, subtree: true });
     };
 
-    // Execute functions
     observeAdElements();
     hijackXHR();
     observeDetectionOverlay();
-})();;
+})();
