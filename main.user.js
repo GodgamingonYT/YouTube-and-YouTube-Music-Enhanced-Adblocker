@@ -5,6 +5,7 @@
 // @description  Block ads and bypass YouTube Adblock detection efficiently
 // @downloadURL  https://raw.githubusercontent.com/GodgamingonYT/YouTube-and-YouTube-Music-Enhanced-Adblocker/main/main.user.js
 // @updateURL    https://raw.githubusercontent.com/GodgamingonYT/YouTube-and-YouTube-Music-Enhanced-Adblocker/main/main.user.js
+// @author       Godgaming
 // @run-at       document-start
 // @grant        none
 // ==/UserScript==
